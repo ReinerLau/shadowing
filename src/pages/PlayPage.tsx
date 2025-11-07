@@ -226,7 +226,7 @@ function PlayPage() {
     const previousEntry = subtitle.entries[currentSubtitleIndex - 1];
     videoRef.current.currentTime = previousEntry.startTime / 1000; // 转换为秒
     setCurrentSubtitleIndex(currentSubtitleIndex - 1);
-    videoRef.current.play();
+    // videoRef.current.play();
   };
 
   /**
@@ -238,7 +238,7 @@ function PlayPage() {
     const nextEntry = subtitle.entries[currentSubtitleIndex + 1];
     videoRef.current.currentTime = nextEntry.startTime / 1000; // 转换为秒
     setCurrentSubtitleIndex(currentSubtitleIndex + 1);
-    videoRef.current.play();
+    // videoRef.current.play();
   };
 
   /**
