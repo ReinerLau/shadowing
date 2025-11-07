@@ -531,7 +531,7 @@ function PlayPage() {
         </div>
 
         {/* 操作区域 */}
-        <div className="p-3 h-20 flex gap-4 bg-white max-sm:pb-4">
+        <div className="p-3 h-20 flex gap-4 bg-white max-sm:pb-5">
           <Button
             className="flex-1 h-full"
             type="text"
