@@ -470,7 +470,7 @@ function PlayPage() {
           />
         </div>
 
-        <div className="flex-1 flex min-h-0 w-full max-sm:flex-col">
+        <div className="flex-1 flex overflow-hidden w-full max-sm:flex-col">
           {/* 视频播放器 */}
           <div className="h-full flex-1 bg-black overflow-hidden max-sm:flex-none max-sm:h-auto max-sm:aspect-video">
             <MediaController className="w-full h-full">
@@ -531,7 +531,7 @@ function PlayPage() {
         </div>
 
         {/* 操作区域 */}
-        <div className="p-3 h-20 flex gap-4 bg-white">
+        <div className="p-3 h-20 flex gap-4 bg-white max-sm:pb-4">
           <Button
             className="flex-1 h-full"
             type="text"
