@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Button, message } from "antd";
+import { debounce } from "lodash-es";
 import { EditModePopup } from "../components/EditModePopup";
 import { RecordingPopup } from "../components/RecordingPopup";
 import SubtitleList from "../components/SubtitleList";
@@ -54,6 +55,7 @@ function PlayPage() {
       setSubtitle(subtitleFromHook);
     }
   }, [subtitleFromHook]);
+
   const [isMoreModalOpen, setIsMoreModalOpen] = useState<boolean>(false);
   const [playMode, setPlayMode] = useState<PlayMode>(PlayModeValues.OFF);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -74,6 +76,30 @@ function PlayPage() {
   const isSeeking = useRef<boolean>(false);
   /** 录音模式是否显示 */
   const [recordingMode, setRecordingMode] = useState<boolean>(false);
+
+  /**
+   * 防抖更新视频时间
+   * 使用 lodash debounce 实现，延迟 150ms
+   */
+  const updateVideoTimeDebounced = useMemo(
+    () =>
+      debounce((timeInSeconds: number) => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = timeInSeconds;
+          // videoRef.current.play();
+        }
+      }, 500),
+    []
+  );
+
+  /**
+   * 组件卸载时清理防抖函数
+   */
+  useEffect(() => {
+    return () => {
+      updateVideoTimeDebounced.cancel();
+    };
+  }, [updateVideoTimeDebounced]);
 
   /**
    * 根据播放模式检查并处理字幕播放逻辑
@@ -221,11 +247,13 @@ function PlayPage() {
    */
   const handlePreviousSubtitle = () => {
     if (!videoRef.current || !subtitle) return;
-
     if (currentSubtitleIndex < 1) return;
+    videoRef.current.pause();
     const previousEntry = subtitle.entries[currentSubtitleIndex - 1];
-    videoRef.current.currentTime = previousEntry.startTime / 1000; // 转换为秒
+    // 立即更新字幕索引以触发列表滚动
     setCurrentSubtitleIndex(currentSubtitleIndex - 1);
+    // 防抖更新视频时间
+    updateVideoTimeDebounced(previousEntry.startTime / 1000);
     // videoRef.current.play();
   };
 
@@ -235,9 +263,12 @@ function PlayPage() {
   const handleNextSubtitle = () => {
     if (!videoRef.current || !subtitle) return;
     if (currentSubtitleIndex === subtitle.entries.length - 1) return;
+    videoRef.current.pause();
     const nextEntry = subtitle.entries[currentSubtitleIndex + 1];
-    videoRef.current.currentTime = nextEntry.startTime / 1000; // 转换为秒
+    // 立即更新字幕索引以触发列表滚动
     setCurrentSubtitleIndex(currentSubtitleIndex + 1);
+    // 防抖更新视频时间
+    updateVideoTimeDebounced(nextEntry.startTime / 1000);
     // videoRef.current.play();
   };
 
