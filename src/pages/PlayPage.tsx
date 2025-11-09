@@ -228,7 +228,9 @@ function PlayPage() {
     // 立即更新字幕索引以触发列表滚动
     setCurrentSubtitleIndex(currentSubtitleIndex - 1);
     // 更新视频时间
-    videoRef.current.currentTime = previousEntry.startTime / 1000;
+    requestAnimationFrame(() => {
+      videoRef.current!.currentTime = previousEntry.startTime / 1000;
+    });
   };
 
   /**
@@ -242,7 +244,9 @@ function PlayPage() {
     // 立即更新字幕索引以触发列表滚动
     setCurrentSubtitleIndex(currentSubtitleIndex + 1);
     // 更新视频时间
-    videoRef.current.currentTime = nextEntry.startTime / 1000;
+    requestAnimationFrame(() => {
+      videoRef.current!.currentTime = nextEntry.startTime / 1000;
+    });
   };
 
   /**
