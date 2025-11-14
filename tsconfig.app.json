@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "types": ["vite-plugin-pwa/react"]
+    "types": ["vite-plugin-pwa/react", "wicg-file-system-access"]
   },
   "include": ["src"]
 }

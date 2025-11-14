@@ -47,6 +47,7 @@
     "unocss": "^66.5.2",
     "vite": "^7.1.7",
     "vite-plugin-mkcert": "^1.17.9",
-    "vite-plugin-pwa": "^1.0.3"
+    "vite-plugin-pwa": "^1.0.3",
+    "workbox-window": "^7.3.0"
   }
 }
