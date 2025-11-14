@@ -2,14 +2,15 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import UnoCSS from "unocss/vite";
 import { VitePWA } from "vite-plugin-pwa";
+// import mkcert from "vite-plugin-mkcert";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     UnoCSS(),
+    // mkcert(),
     VitePWA({
-      registerType: "autoUpdate",
       devOptions: {
         enabled: false,
       },
