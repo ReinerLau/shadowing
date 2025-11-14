@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Button } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { Button, FloatButton } from "antd";
 import { Dialog } from "antd-mobile";
 import {
   List,
@@ -145,6 +145,19 @@ function SubtitleList({
   subtitleBlurred,
 }: SubtitleListProps) {
   const listRef = useListRef(null);
+  /**
+   * 字幕索引是否更新
+   */
+  const isSubtitleIndexChanged = useRef(false);
+  /**
+   * 是否手动滑动模式
+   */
+  const isManualScroll = useRef(false);
+  /**
+   * 是否显示返回当前字幕按钮（手动滑动模式下显示）
+   */
+  const [showScrollToCurrentButton, setShowScrollToCurrentButton] =
+    useState(false);
 
   /**
    * 使用 useDynamicRowHeight hook 管理动态行高
@@ -158,9 +171,15 @@ function SubtitleList({
    */
   useEffect(() => {
     if (!subtitle || !listRef.current) return;
+    // 手动滑动模式下不跟随字幕索引滚动
+    if (isManualScroll.current) return;
+
+    // 确保按钮在自动滚动模式下隐藏
+    setShowScrollToCurrentButton(false);
 
     if (currentIndex !== -1) {
       const rafId = requestAnimationFrame(() => {
+        isSubtitleIndexChanged.current = true;
         listRef.current?.scrollToRow({
           index: currentIndex,
           align: "center",
@@ -171,21 +190,62 @@ function SubtitleList({
     }
   }, [currentIndex, subtitle, listRef]);
 
+  const handleScroll = () => {
+    // 字幕索引更新不触发该事件
+    if (isSubtitleIndexChanged.current) {
+      isSubtitleIndexChanged.current = false;
+      return;
+    }
+    // 进入手动滑动模式
+    isManualScroll.current = true;
+    setShowScrollToCurrentButton(true);
+  };
+
+  /**
+   * 处理返回当前字幕按钮点击 - 退出手动滑动模式并滚动到当前字幕
+   */
+  const handleScrollToCurrent = () => {
+    // 退出手动滑动模式
+    isManualScroll.current = false;
+    setShowScrollToCurrentButton(false);
+    // 滚动到当前字幕索引
+    if (currentIndex !== -1 && listRef.current) {
+      isSubtitleIndexChanged.current = true;
+      listRef.current.scrollToRow({
+        index: currentIndex,
+        align: "center",
+      });
+    }
+  };
+
   return (
-    <List
-      listRef={listRef}
-      rowCount={subtitle.entries.length}
-      rowHeight={rowHeight}
-      rowComponent={SubtitleRow}
-      rowProps={{
-        subtitle,
-        currentIndex,
-        onSubtitleClick,
-        onEnterEditMode,
-        onEnterRecordingMode,
-        subtitleBlurred,
-      }}
-    />
+    <>
+      <List
+        listRef={listRef}
+        rowCount={subtitle.entries.length}
+        rowHeight={rowHeight}
+        rowComponent={SubtitleRow}
+        rowProps={{
+          subtitle,
+          currentIndex,
+          onSubtitleClick,
+          onEnterEditMode,
+          onEnterRecordingMode,
+          subtitleBlurred,
+        }}
+        onScroll={handleScroll}
+      />
+      {/* 返回当前字幕悬浮按钮 - 仅在手动滑动模式下显示 */}
+      {showScrollToCurrentButton && (
+        <FloatButton
+          icon={<div className="i-mdi-target text-lg" />}
+          onClick={handleScrollToCurrent}
+          tooltip="返回当前字幕"
+          type="primary"
+          className="bottom-22"
+        />
+      )}
+    </>
   );
 }
 
