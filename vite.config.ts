@@ -11,6 +11,7 @@ export default defineConfig({
     UnoCSS(),
     // mkcert(),
     VitePWA({
+      registerType: "autoUpdate",
       devOptions: {
         enabled: false,
       },

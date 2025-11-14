@@ -21,9 +21,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-
-    "types": ["vite-plugin-pwa/react", "wicg-file-system-access"]
+    "noUncheckedSideEffectImports": true
   },
   "include": ["src"]
 }

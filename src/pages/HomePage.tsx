@@ -5,9 +5,8 @@ import VideoCard from "../components/VideoCard";
 import MediaDatabaseService from "../services/mediaDatabase";
 import SessionStorageService from "../services/sessionStorage";
 import type { MediaFile } from "../types";
-import { Dialog, NoticeBar } from "antd-mobile";
+import { Dialog } from "antd-mobile";
 import packageJson from "../../package.json";
-import { useRegisterSW } from "virtual:pwa-register/react";
 
 /**
  * 首页组件
@@ -19,11 +18,6 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   /** 存储使用量 */
   const storageUsageRef = useRef<number | null>(null);
-
-  const {
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW();
 
   /**
    * 获取所有视频
@@ -115,30 +109,6 @@ function HomePage() {
         {/* 导入视频 */}
         <ImportVideo />
       </div>
-      {needRefresh && (
-        <NoticeBar
-          content="有新版本可用"
-          color="info"
-          extra={
-            <div className="space-x-1">
-              <Button
-                color="default"
-                variant="text"
-                onClick={() => setNeedRefresh(false)}
-              >
-                忽略
-              </Button>
-              <Button
-                color="primary"
-                variant="filled"
-                onClick={() => updateServiceWorker(true)}
-              >
-                更新
-              </Button>
-            </div>
-          }
-        />
-      )}
       {/* 视频列表 */}
       <div className="flex-1 overflow-auto p-4">
         {loading ? (
