@@ -220,34 +220,36 @@ function PlayPage() {
   /**
    * 上一句 - 跳转到上一个字幕条目的开始时间
    */
-  // const handlePreviousSubtitle = () => {
-  //   if (!videoRef.current || !subtitle) return;
-  //   if (currentSubtitleIndex < 1) return;
-  //   videoRef.current.pause();
-  //   const previousEntry = subtitle.entries[currentSubtitleIndex - 1];
-  //   // 立即更新字幕索引以触发列表滚动
-  //   setCurrentSubtitleIndex(currentSubtitleIndex - 1);
-  //   // 更新视频时间
-  //   requestAnimationFrame(() => {
-  //     videoRef.current!.currentTime = previousEntry.startTime / 1000;
-  //   });
-  // };
+  const handlePreviousSubtitle = () => {
+    requestAnimationFrame(() => {
+      if (!videoRef.current || !subtitle) return;
+      if (currentSubtitleIndex < 1) return;
+      const previousEntry = subtitle.entries[currentSubtitleIndex - 1];
+      // 立即更新字幕索引以触发列表滚动
+      setCurrentSubtitleIndex((prev) => {
+        return prev - 1;
+      });
+      // 更新视频时间
+      videoRef.current!.currentTime = previousEntry.startTime / 1000;
+    });
+  };
 
   /**
    * 下一句 - 跳转到下一个字幕条目的开始时间
    */
-  // const handleNextSubtitle = () => {
-  //   if (!videoRef.current || !subtitle) return;
-  //   if (currentSubtitleIndex === subtitle.entries.length - 1) return;
-  //   videoRef.current.pause();
-  //   const nextEntry = subtitle.entries[currentSubtitleIndex + 1];
-  //   // 立即更新字幕索引以触发列表滚动
-  //   setCurrentSubtitleIndex(currentSubtitleIndex + 1);
-  //   // 更新视频时间
-  //   requestAnimationFrame(() => {
-  //     videoRef.current!.currentTime = nextEntry.startTime / 1000;
-  //   });
-  // };
+  const handleNextSubtitle = () => {
+    requestAnimationFrame(() => {
+      if (!videoRef.current || !subtitle) return;
+      if (currentSubtitleIndex === subtitle.entries.length - 1) return;
+      const nextEntry = subtitle.entries[currentSubtitleIndex + 1];
+      // 立即更新字幕索引以触发列表滚动
+      setCurrentSubtitleIndex((prev) => {
+        return prev + 1;
+      });
+      // 更新视频时间
+      videoRef.current!.currentTime = nextEntry.startTime / 1000;
+    });
+  };
 
   /**
    * 播放/暂停切换
@@ -542,12 +544,12 @@ function PlayPage() {
 
         {/* 操作区域 */}
         <div className="p-3 h-20 flex gap-4 bg-white max-sm:pb-5">
-          {/* <Button
+          <Button
             className="flex-1 h-full"
             type="text"
             onClick={handlePreviousSubtitle}
             icon={<div className="i-mdi:skip-previous text-xl" />}
-          /> */}
+          />
           <Button
             className="flex-1 h-full"
             type="text"
@@ -560,12 +562,12 @@ function PlayPage() {
               )
             }
           />
-          {/* <Button
+          <Button
             className="flex-1 h-full"
             type="text"
             onClick={handleNextSubtitle}
             icon={<div className="i-mdi:skip-next text-xl" />}
-          /> */}
+          />
         </div>
       </div>
       {/* 更多弹窗 */}
