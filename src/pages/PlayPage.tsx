@@ -231,6 +231,7 @@ function PlayPage() {
       });
       // 更新视频时间
       videoRef.current!.currentTime = previousEntry.startTime / 1000;
+      videoRef.current!.play();
     });
   };
 
@@ -248,6 +249,7 @@ function PlayPage() {
       });
       // 更新视频时间
       videoRef.current!.currentTime = nextEntry.startTime / 1000;
+      videoRef.current!.play();
     });
   };
 
@@ -291,14 +293,15 @@ function PlayPage() {
    * 处理字幕点击事件 - 跳转到对应时间
    */
   const handleSubtitleClick = (subtitleIndex: number) => {
-    if (!videoRef.current || !subtitle || subtitleIndex === -1) return;
-    // 获取对应索引的字幕条目
-    const entry = subtitle.entries[subtitleIndex];
-    // 更新当前字幕索引
-    setCurrentSubtitleIndex(subtitleIndex);
-    // 将毫秒转换为秒
     requestAnimationFrame(() => {
+      if (!videoRef.current || !subtitle || subtitleIndex === -1) return;
+      // 获取对应索引的字幕条目
+      const entry = subtitle.entries[subtitleIndex];
+      // 更新当前字幕索引
+      setCurrentSubtitleIndex(subtitleIndex);
+      // 将毫秒转换为秒
       videoRef.current!.currentTime = entry.startTime / 1000;
+      videoRef.current!.play();
     });
   };
 
