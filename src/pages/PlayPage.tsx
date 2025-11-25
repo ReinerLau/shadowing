@@ -164,6 +164,7 @@ function PlayPage() {
    * 视频加载元数据后跳转到保存的字幕索引
    */
   const handleLoadedMetadata = () => {
+    console.log("savedSubtitleIndex", savedSubtitleIndex);
     if (!videoRef.current || !subtitle || savedSubtitleIndex < 0) return;
 
     // 跳转到保存的字幕索引
