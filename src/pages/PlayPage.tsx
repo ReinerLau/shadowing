@@ -165,7 +165,13 @@ function PlayPage() {
    */
   const handleLoadedMetadata = () => {
     console.log("savedSubtitleIndex", savedSubtitleIndex);
-    if (!videoRef.current || !subtitle || savedSubtitleIndex < 0) return;
+    if (
+      !videoRef.current ||
+      !subtitle ||
+      savedSubtitleIndex < 0 ||
+      currentSubtitleIndex !== -1
+    )
+      return;
 
     // 跳转到保存的字幕索引
     const savedEntry = subtitle.entries[savedSubtitleIndex];
