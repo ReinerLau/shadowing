@@ -90,6 +90,10 @@ function PlayPage() {
   const checkPlayMode = (shouldSeekToStart: boolean = false): boolean => {
     if (!subtitle || currentSubtitleIndex === -1 || !videoRef.current)
       return true;
+    // 如果手动拖动进度条，为了避免字幕空窗期,先等待更新字幕索引完成后再进行播放模式判断
+    if (isSeeking.current) {
+      return true;
+    }
 
     const currentTimeMs = videoRef.current.currentTime * 1000;
     const currentEntry = subtitle.entries[currentSubtitleIndex];
@@ -187,7 +191,6 @@ function PlayPage() {
    * 监听视频播放时间并同步字幕索引
    */
   const handleTimeUpdate = () => {
-    if (isSeeking.current) return;
     if (!subtitle) return;
 
     const currentTimeMs = videoRef.current!.currentTime * 1000 || 0; // 转换为毫秒
@@ -203,9 +206,10 @@ function PlayPage() {
         currentTimeMs >= entry.startTime && currentTimeMs < entry.endTime
     );
 
-    // 只有当 index 不是 -1 时才更新 currentSubtitleIndex
+    // 字幕之间可能存在空窗, 只有当 index 不是 -1 时才更新 currentSubtitleIndex
     if (index !== -1) {
       setCurrentSubtitleIndex(index);
+      isSeeking.current = false;
     }
   };
 
@@ -220,7 +224,7 @@ function PlayPage() {
    * 处理 seeked 结束事件
    */
   const handleSeeked = () => {
-    isSeeking.current = false;
+    isSeeking.current = true;
   };
 
   /**
@@ -583,7 +587,7 @@ function PlayPage() {
           <div className="w-1/3 p-4 max-sm:w-full max-sm:flex-1 max-sm:overflow-hidden">
             {subtitle && quizMode ? (
               // 测验模式：只显示当前字幕
-              <div className="h-full flex items-center justify-center bg-white rounded-lg shadow-lg p-4 relative">
+              <div className="h-full flex items-center justify-center bg-white rounded shadow p-4 relative">
                 {currentSubtitleIndex !== -1 && (
                   <>
                     <div
