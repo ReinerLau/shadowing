@@ -665,16 +665,16 @@ function PlayPage() {
           <div className="w-1/3 p-4 max-sm:w-full max-sm:flex-1 max-sm:overflow-hidden">
             {subtitle && quizMode ? (
               // 测验模式：只显示当前字幕
-              <div className="h-full flex items-center justify-center bg-white rounded shadow p-4 relative">
+              <div
+                className="h-full flex items-center justify-center bg-white rounded shadow p-4 relative"
+                onClick={() => setQuizSubtitleBlurred(!quizSubtitleBlurred)}
+              >
                 {currentSubtitleIndex !== -1 && (
                   <>
                     <div
                       className={`text-xl text-center cursor-pointer select-none transition-all ${
                         quizSubtitleBlurred ? "blur-md" : "blur-none"
                       }`}
-                      onClick={() =>
-                        setQuizSubtitleBlurred(!quizSubtitleBlurred)
-                      }
                     >
                       {subtitle.entries[currentSubtitleIndex].text}
                     </div>
