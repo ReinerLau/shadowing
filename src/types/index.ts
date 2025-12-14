@@ -48,9 +48,9 @@ export interface SubtitleEntry {
   startTime: number;
   /** 结束时间（毫秒） */
   endTime: number;
-  /** 精确开始时间（毫秒） */
+  /** 精确开始时间（毫秒）(用于单句暂停和单句循环模式) */
   preciseStartTime: number;
-  /** 精确结束时间（毫秒） */
+  /** 精确结束时间（毫秒）(用于单句暂停和单句循环模式) */
   preciseEndTime: number;
   /** 字幕文本 */
   text: string;
