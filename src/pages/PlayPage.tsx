@@ -82,6 +82,48 @@ function PlayPage() {
   const [recordingMode, setRecordingMode] = useState<boolean>(false);
 
   /**
+   * 使用二分法查找距离指定时间最近的字幕索引
+   * @param entries 字幕条目数组
+   * @param targetTime 目标时间（毫秒）
+   * @param direction 查找方向：'next' 查找大于目标时间的最近字幕，'previous' 查找小于目标时间的最近字幕
+   * @returns 字幕索引，如果没有找到返回 -1
+   */
+  const findSubtitleIndexByTime = (
+    entries: SubtitleEntry[],
+    targetTime: number,
+    direction: "next" | "previous"
+  ): number => {
+    let left = 0;
+    let right = entries.length - 1;
+    let result = -1;
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const startTime = entries[mid].startTime;
+
+      if (direction === "next") {
+        // 查找 startTime > targetTime 的最小索引
+        if (startTime > targetTime) {
+          result = mid;
+          right = mid - 1;
+        } else {
+          left = mid + 1;
+        }
+      } else {
+        // 查找 startTime < targetTime 的最大索引
+        if (startTime < targetTime) {
+          result = mid;
+          left = mid + 1;
+        } else {
+          right = mid - 1;
+        }
+      }
+    }
+
+    return result;
+  };
+
+  /**
    * 根据播放模式检查并处理字幕播放逻辑
    * 优先判断是否为编辑模式或录音模式，这两种模式的逻辑与单句暂停相同
    * @param shouldSeekToStart 是否应该跳转到字幕开始位置（播放时为 true，时间更新时为 false）
@@ -247,12 +289,30 @@ function PlayPage() {
   const handlePreviousSubtitle = () => {
     requestAnimationFrame(() => {
       if (!videoRef.current || !subtitle) return;
-      if (currentSubtitleIndex < 1) return;
-      const previousEntry = subtitle.entries[currentSubtitleIndex - 1];
-      // 立即更新字幕索引以触发列表滚动
-      setCurrentSubtitleIndex((prev) => {
-        return prev - 1;
-      });
+
+      let prevIndex: number;
+      if (isSeeking.current) {
+        // 使用二分法查找
+        const currentTimeMs = videoRef.current.currentTime * 1000;
+        prevIndex = findSubtitleIndexByTime(
+          subtitle.entries,
+          currentTimeMs,
+          "previous"
+        );
+        if (prevIndex === -1) return; // 没有上一句
+        // 立即更新字幕索引以触发列表滚动
+        setCurrentSubtitleIndex(prevIndex);
+      } else {
+        // 旧逻辑 - 使用函数式更新
+        if (currentSubtitleIndex < 1) return;
+        prevIndex = currentSubtitleIndex - 1;
+        // 立即更新字幕索引以触发列表滚动
+        setCurrentSubtitleIndex((prev) => prev - 1);
+      }
+
+      const previousEntry = subtitle.entries[prevIndex];
+      // 重置 isSeeking 状态
+      isSeeking.current = false;
       // 更新视频时间
       videoRef.current!.currentTime = previousEntry.startTime / 1000;
       videoRef.current!.play();
@@ -265,12 +325,30 @@ function PlayPage() {
   const handleNextSubtitle = () => {
     requestAnimationFrame(() => {
       if (!videoRef.current || !subtitle) return;
-      if (currentSubtitleIndex === subtitle.entries.length - 1) return;
-      const nextEntry = subtitle.entries[currentSubtitleIndex + 1];
-      // 立即更新字幕索引以触发列表滚动
-      setCurrentSubtitleIndex((prev) => {
-        return prev + 1;
-      });
+
+      let nextIndex: number;
+      if (isSeeking.current) {
+        // 使用二分法查找
+        const currentTimeMs = videoRef.current.currentTime * 1000;
+        nextIndex = findSubtitleIndexByTime(
+          subtitle.entries,
+          currentTimeMs,
+          "next"
+        );
+        if (nextIndex === -1) return; // 没有下一句
+        // 立即更新字幕索引以触发列表滚动
+        setCurrentSubtitleIndex(nextIndex);
+      } else {
+        // 旧逻辑 - 使用函数式更新
+        if (currentSubtitleIndex === subtitle.entries.length - 1) return;
+        nextIndex = currentSubtitleIndex + 1;
+        // 立即更新字幕索引以触发列表滚动
+        setCurrentSubtitleIndex((prev) => prev + 1);
+      }
+
+      const nextEntry = subtitle.entries[nextIndex];
+      // 重置 isSeeking 状态
+      isSeeking.current = false;
       // 更新视频时间
       videoRef.current!.currentTime = nextEntry.startTime / 1000;
       videoRef.current!.play();
