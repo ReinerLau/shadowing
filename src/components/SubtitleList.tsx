@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, FloatButton } from "antd";
-import { Dialog } from "antd-mobile";
 import {
   List,
   useDynamicRowHeight,
@@ -19,10 +18,8 @@ interface SubtitleListProps {
   currentIndex: number;
   /** 字幕点击回调 - 用于跳转到对应时间 */
   onSubtitleClick?: (subtitleIndex: number) => void;
-  /** 进入编辑模式回调 */
-  onEnterEditMode?: (subtitleIndex: number) => void;
-  /** 进入录音模式回调 */
-  onEnterRecordingMode?: (subtitleIndex: number) => void;
+  /** 更多操作按钮点击回调 */
+  onMoreClick: (e: React.MouseEvent, subtitleIndex: number) => void;
   /** 是否对字幕添加模糊滤镜 */
   subtitleBlurred?: boolean;
 }
@@ -36,15 +33,13 @@ const SubtitleRow = ({
   subtitle,
   currentIndex,
   onSubtitleClick,
-  onEnterEditMode,
-  onEnterRecordingMode,
+  onMoreClick,
   subtitleBlurred,
 }: RowComponentProps<{
   subtitle: Subtitle;
   currentIndex: number;
   onSubtitleClick?: (subtitleIndex: number) => void;
-  onEnterEditMode?: (subtitleIndex: number) => void;
-  onEnterRecordingMode?: (subtitleIndex: number) => void;
+  onMoreClick: (e: React.MouseEvent, subtitleIndex: number) => void;
   subtitleBlurred?: boolean;
 }>) => {
   const entry = subtitle.entries[index];
@@ -63,42 +58,7 @@ const SubtitleRow = ({
    * 处理更多操作按钮点击事件
    */
   const handleMoreClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    Dialog.show({
-      title: "操作",
-      closeOnMaskClick: true,
-      closeOnAction: true,
-      actions: [
-        {
-          key: "offset",
-          text: "校准",
-          onClick: handleOffset,
-        },
-        {
-          key: "record",
-          text: "跟读",
-          onClick: handleRecord,
-        },
-      ],
-    });
-  };
-
-  /**
-   * 处理偏移操作
-   */
-  const handleOffset = () => {
-    if (onEnterEditMode) {
-      onEnterEditMode(index);
-    }
-  };
-
-  /**
-   * 处理录音操作
-   */
-  const handleRecord = () => {
-    if (onEnterRecordingMode) {
-      onEnterRecordingMode(index);
-    }
+    onMoreClick(e, index);
   };
 
   return (
@@ -140,8 +100,7 @@ function SubtitleList({
   subtitle,
   currentIndex,
   onSubtitleClick,
-  onEnterEditMode,
-  onEnterRecordingMode,
+  onMoreClick,
   subtitleBlurred,
 }: SubtitleListProps) {
   const listRef = useListRef(null);
@@ -229,8 +188,7 @@ function SubtitleList({
           subtitle,
           currentIndex,
           onSubtitleClick,
-          onEnterEditMode,
-          onEnterRecordingMode,
+          onMoreClick,
           subtitleBlurred,
         }}
         onScroll={handleScroll}

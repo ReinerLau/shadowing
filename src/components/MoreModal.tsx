@@ -18,6 +18,10 @@ interface MoreModalProps {
   subtitleBlurred: boolean;
   /** 字幕模糊状态变化回调 */
   onSubtitleBlurChange: (blurred: boolean) => void;
+  /** 测验模式状态 */
+  quizMode: boolean;
+  /** 测验模式变化回调 */
+  onQuizModeChange: (enabled: boolean) => void;
   /** 弹窗关闭回调 */
   onCancel: () => void;
 }
@@ -33,6 +37,8 @@ export const MoreModal = ({
   onPlaybackSpeedChange,
   subtitleBlurred,
   onSubtitleBlurChange,
+  quizMode,
+  onQuizModeChange,
   onCancel,
 }: MoreModalProps) => {
   /** 播放速度状态，由 MoreModal 内部管理 */
@@ -100,6 +106,11 @@ export const MoreModal = ({
         <div className="mt-4 flex items-center justify-between">
           <span>字幕模糊</span>
           <Switch checked={subtitleBlurred} onChange={onSubtitleBlurChange} />
+        </div>
+        {/* 测验模式开关 */}
+        <div className="mt-4 flex items-center justify-between">
+          <span>测验模式</span>
+          <Switch checked={quizMode} onChange={onQuizModeChange} />
         </div>
       </div>
     </Modal>

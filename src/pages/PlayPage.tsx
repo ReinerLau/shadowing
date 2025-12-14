@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Button, message } from "antd";
+import { Dialog } from "antd-mobile";
 import { EditModePopup } from "../components/EditModePopup";
 import { RecordingPopup } from "../components/RecordingPopup";
 import SubtitleList from "../components/SubtitleList";
@@ -71,6 +72,10 @@ function PlayPage() {
   const [editedText, setEditedText] = useState<string>("");
   /** 字幕模糊状态 */
   const [subtitleBlurred, setSubtitleBlurred] = useState<boolean>(false);
+  /** 测验模式状态 */
+  const [quizMode, setQuizMode] = useState<boolean>(false);
+  /** 测验模式下当前字幕的模糊状态 */
+  const [quizSubtitleBlurred, setQuizSubtitleBlurred] = useState<boolean>(true);
   /** 是否正在拖动进度条 */
   const isSeeking = useRef<boolean>(false);
   /** 录音模式是否显示 */
@@ -222,6 +227,15 @@ function PlayPage() {
    * 离开页面时保存当前字幕索引
    */
   useSubtitleIndexPersist(mediaId, currentSubtitleIndex);
+
+  /**
+   * 监听字幕索引变化，在测验模式下自动重置模糊状态
+   */
+  useEffect(() => {
+    if (quizMode) {
+      setQuizSubtitleBlurred(true);
+    }
+  }, [currentSubtitleIndex, quizMode]);
 
   /**
    * 上一句 - 跳转到上一个字幕条目的开始时间
@@ -444,6 +458,35 @@ function PlayPage() {
     setRecordingMode(false);
   };
 
+  /**
+   * 处理字幕更多操作按钮点击
+   * @param e 鼠标事件
+   * @param subtitleIndex 字幕索引
+   */
+  const handleSubtitleMoreClick = (
+    e: React.MouseEvent,
+    subtitleIndex: number
+  ) => {
+    e.stopPropagation();
+    Dialog.show({
+      title: "操作",
+      closeOnMaskClick: true,
+      closeOnAction: true,
+      actions: [
+        {
+          key: "offset",
+          text: "校准",
+          onClick: () => handleEnterEditMode(subtitleIndex),
+        },
+        {
+          key: "record",
+          text: "跟读",
+          onClick: () => handleEnterRecordingMode(subtitleIndex),
+        },
+      ],
+    });
+  };
+
   const handleVideoError = () => {
     message.error("视频播放失败，请检查视频文件格式");
   };
@@ -538,15 +581,46 @@ function PlayPage() {
 
           {/* 字幕列表 */}
           <div className="w-1/3 p-4 max-sm:w-full max-sm:flex-1 max-sm:overflow-hidden">
-            {subtitle && (
-              <SubtitleList
-                subtitle={subtitle}
-                currentIndex={currentSubtitleIndex}
-                onSubtitleClick={handleSubtitleClick}
-                onEnterEditMode={handleEnterEditMode}
-                onEnterRecordingMode={handleEnterRecordingMode}
-                subtitleBlurred={subtitleBlurred}
-              />
+            {subtitle && quizMode ? (
+              // 测验模式：只显示当前字幕
+              <div className="h-full flex items-center justify-center bg-white rounded-lg shadow-lg p-4 relative">
+                {currentSubtitleIndex !== -1 && (
+                  <>
+                    <div
+                      className={`text-xl text-center cursor-pointer select-none transition-all ${
+                        quizSubtitleBlurred ? "blur-md" : "blur-none"
+                      }`}
+                      onClick={() =>
+                        setQuizSubtitleBlurred(!quizSubtitleBlurred)
+                      }
+                    >
+                      {subtitle.entries[currentSubtitleIndex].text}
+                    </div>
+                    {/* 更多操作按钮 */}
+                    <Button
+                      type="text"
+                      size="small"
+                      className="absolute top-2 right-2"
+                      onClick={(e) =>
+                        handleSubtitleMoreClick(e, currentSubtitleIndex)
+                      }
+                      title="更多操作"
+                      icon={<div className="i-mdi-dots-horizontal text-lg" />}
+                    />
+                  </>
+                )}
+              </div>
+            ) : (
+              // 其他模式：显示字幕列表
+              subtitle && (
+                <SubtitleList
+                  subtitle={subtitle}
+                  currentIndex={currentSubtitleIndex}
+                  onSubtitleClick={handleSubtitleClick}
+                  onMoreClick={handleSubtitleMoreClick}
+                  subtitleBlurred={subtitleBlurred}
+                />
+              )
             )}
           </div>
         </div>
@@ -588,6 +662,8 @@ function PlayPage() {
         playMode={playMode}
         subtitleBlurred={subtitleBlurred}
         onSubtitleBlurChange={setSubtitleBlurred}
+        quizMode={quizMode}
+        onQuizModeChange={setQuizMode}
       />
       {/* 编辑模式 Popup */}
       <EditModePopup
