@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Button, message } from "antd";
 import { Dialog } from "antd-mobile";
@@ -409,7 +409,7 @@ function PlayPage() {
   /**
    * 播放/暂停切换
    */
-  const handleTogglePlayPause = () => {
+  const handleTogglePlayPause = useCallback(() => {
     if (!videoRef.current) return;
 
     if (isPlaying) {
@@ -419,7 +419,39 @@ function PlayPage() {
       checkPlayMode(true);
       videoRef.current.play();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying]);
+
+  /**
+   * 监听键盘事件：空格键触发播放/暂停
+   */
+  useEffect(() => {
+    /**
+     * 处理键盘按下事件
+     */
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 只处理空格键
+      if (e.code === "Space" || e.key === " ") {
+        // 如果处于编辑模式或录音模式，不处理空格键
+        if (editMode || recordingMode) {
+          return;
+        }
+
+        // 阻止默认行为（防止页面滚动）
+        e.preventDefault();
+        // 触发播放/暂停
+        handleTogglePlayPause();
+      }
+    };
+
+    // 添加键盘事件监听器
+    window.addEventListener("keydown", handleKeyDown);
+
+    // 组件卸载时移除监听器
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleTogglePlayPause, editMode, recordingMode]);
 
   /**
    * 返回首页
