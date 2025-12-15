@@ -1,4 +1,4 @@
-import { Modal, Radio, Switch } from "antd";
+import { Modal, Radio, Slider, Switch } from "antd";
 import { PlayModeValues, type PlayMode } from "../types";
 
 /**
@@ -71,26 +71,19 @@ export const MoreModal = ({
         />
         {/* 播放速度 */}
         <div>播放速度</div>
-        <Radio.Group
-          block
+        <Slider
+          min={0.25}
+          max={1.0}
+          step={null}
+          marks={{
+            0.25: "0.25x",
+            0.5: "0.5x",
+            0.6: "0.6x",
+            0.8: "0.8x",
+            1.0: "1.0x",
+          }}
           value={playbackSpeed}
-          onChange={(e) => onPlaybackSpeedChange(e.target.value as number)}
-          optionType="button"
-          buttonStyle="solid"
-          options={[
-            {
-              label: "0.6x",
-              value: 0.6,
-            },
-            {
-              label: "0.8x",
-              value: 0.8,
-            },
-            {
-              label: "1.0x",
-              value: 1.0,
-            },
-          ]}
+          onChange={onPlaybackSpeedChange}
         />
         {/* 字幕模糊开关 */}
         <div className="mt-4 flex items-center justify-between">
