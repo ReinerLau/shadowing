@@ -264,12 +264,14 @@ function PlayPage() {
    * 视频加载元数据后跳转到保存的字幕索引
    */
   const handleLoadedMetadata = () => {
-    if (
-      !videoRef.current ||
-      !subtitle ||
-      savedSubtitleIndex < 0 ||
-      currentSubtitleIndex !== -1
-    )
+    if (!videoRef.current) return;
+
+    // 应用播放速度设置（确保视频元素已准备好）
+    if (playbackSpeed) {
+      videoRef.current.playbackRate = playbackSpeed;
+    }
+
+    if (!subtitle || savedSubtitleIndex < 0 || currentSubtitleIndex !== -1)
       return;
 
     // 跳转到保存的字幕索引
