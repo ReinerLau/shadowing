@@ -661,78 +661,79 @@ function PlayPage() {
             </MediaController>
           </div>
 
-          {/* 字幕列表 */}
-          <div className="w-1/3 p-4 max-sm:w-full max-sm:flex-1 max-sm:overflow-hidden">
-            {subtitle && quizMode ? (
-              // 测验模式：只显示当前字幕
-              <div
-                className="h-full flex items-center justify-center bg-white rounded shadow p-4 relative"
-                onClick={() => setQuizSubtitleBlurred(!quizSubtitleBlurred)}
-              >
-                {currentSubtitleIndex !== -1 && (
-                  <>
-                    <div
-                      className={`text-xl text-center cursor-pointer select-none transition-all ${
-                        quizSubtitleBlurred ? "blur-md" : "blur-none"
-                      }`}
-                    >
-                      {subtitle.entries[currentSubtitleIndex].text}
-                    </div>
-                    {/* 更多操作按钮 */}
-                    <Button
-                      type="text"
-                      size="small"
-                      className="absolute top-2 right-2"
-                      onClick={(e) =>
-                        handleSubtitleMoreClick(e, currentSubtitleIndex)
-                      }
-                      title="更多操作"
-                      icon={<div className="i-mdi-dots-horizontal text-lg" />}
-                    />
-                  </>
-                )}
-              </div>
-            ) : (
-              // 其他模式：显示字幕列表
-              subtitle && (
-                <SubtitleList
-                  subtitle={subtitle}
-                  currentIndex={currentSubtitleIndex}
-                  onSubtitleClick={handleSubtitleClick}
-                  onMoreClick={handleSubtitleMoreClick}
-                  subtitleBlurred={subtitleBlurred}
-                />
-              )
-            )}
-          </div>
-        </div>
-
-        {/* 操作区域 */}
-        <div className="p-3 h-20 flex gap-4 bg-white max-sm:pb-5">
-          <Button
-            className="flex-1 h-full"
-            type="text"
-            onClick={handlePreviousSubtitle}
-            icon={<div className="i-mdi:skip-previous text-xl" />}
-          />
-          <Button
-            className="flex-1 h-full"
-            type="text"
-            onClick={handleTogglePlayPause}
-            icon={
-              isPlaying ? (
-                <div className="i-mdi-pause text-xl" />
+          <div className="w-1/3 flex flex-col max-sm:flex-col-reverse max-sm:w-full max-sm:flex-1 max-sm:overflow-hidden">
+            {/* 字幕列表 */}
+            <div className="p-4 flex-1 overflow-hidden">
+              {subtitle && quizMode ? (
+                // 测验模式：只显示当前字幕
+                <div
+                  className="h-full flex items-center justify-center bg-white rounded shadow p-4 relative"
+                  onClick={() => setQuizSubtitleBlurred(!quizSubtitleBlurred)}
+                >
+                  {currentSubtitleIndex !== -1 && (
+                    <>
+                      <div
+                        className={`text-xl text-center cursor-pointer select-none transition-all ${
+                          quizSubtitleBlurred ? "blur-md" : ""
+                        }`}
+                      >
+                        {subtitle.entries[currentSubtitleIndex].text}
+                      </div>
+                      {/* 更多操作按钮 */}
+                      <Button
+                        type="text"
+                        size="small"
+                        className="absolute top-2 right-2"
+                        onClick={(e) =>
+                          handleSubtitleMoreClick(e, currentSubtitleIndex)
+                        }
+                        title="更多操作"
+                        icon={<div className="i-mdi-dots-horizontal text-lg" />}
+                      />
+                    </>
+                  )}
+                </div>
               ) : (
-                <div className="i-mdi-play text-xl" />
-              )
-            }
-          />
-          <Button
-            className="flex-1 h-full"
-            type="text"
-            onClick={handleNextSubtitle}
-            icon={<div className="i-mdi:skip-next text-xl" />}
-          />
+                // 其他模式：显示字幕列表
+                subtitle && (
+                  <SubtitleList
+                    subtitle={subtitle}
+                    currentIndex={currentSubtitleIndex}
+                    onSubtitleClick={handleSubtitleClick}
+                    onMoreClick={handleSubtitleMoreClick}
+                    subtitleBlurred={subtitleBlurred}
+                  />
+                )
+              )}
+            </div>
+            {/* 操作区域 */}
+            <div className="p-3 h-20 flex gap-4 bg-white max-sm:pb-5">
+              <Button
+                className="flex-1 h-full"
+                type="text"
+                onClick={handlePreviousSubtitle}
+                icon={<div className="i-mdi:skip-previous text-xl" />}
+              />
+              <Button
+                className="flex-1 h-full"
+                type="text"
+                onClick={handleTogglePlayPause}
+                icon={
+                  isPlaying ? (
+                    <div className="i-mdi-pause text-xl" />
+                  ) : (
+                    <div className="i-mdi-play text-xl" />
+                  )
+                }
+              />
+              <Button
+                className="flex-1 h-full"
+                type="text"
+                onClick={handleNextSubtitle}
+                icon={<div className="i-mdi:skip-next text-xl" />}
+              />
+            </div>
+          </div>
         </div>
       </div>
       {/* 更多弹窗 */}
