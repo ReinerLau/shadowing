@@ -23,7 +23,7 @@ export interface PlayerSettings {
  * 默认播放器设置
  */
 const DEFAULT_PLAYER_SETTINGS: PlayerSettings = {
-  playMode: PlayModeValues.OFF,
+  playMode: PlayModeValues.CONTINUOUS_PLAY,
   playbackSpeed: 1.0,
   subtitleBlurred: false,
   quizMode: false,
@@ -62,4 +62,3 @@ export class PlayerSettingsService {
 }
 
 export default PlayerSettingsService;
-

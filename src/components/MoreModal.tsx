@@ -56,8 +56,8 @@ export const MoreModal = ({
           buttonStyle="solid"
           options={[
             {
-              label: "关闭",
-              value: PlayModeValues.OFF,
+              label: "连续播放",
+              value: PlayModeValues.CONTINUOUS_PLAY,
             },
             {
               label: "单句暂停",

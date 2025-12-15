@@ -76,8 +76,8 @@ export interface Subtitle {
  * 播放模式常量定义
  */
 export const PlayModeValues = {
-  /** 关闭 */
-  OFF: "off",
+  /** 连续播放 */
+  CONTINUOUS_PLAY: "continuous-play",
   /** 单句暂停 */
   SINGLE_PAUSE: "single-pause",
   /** 单句循环 */

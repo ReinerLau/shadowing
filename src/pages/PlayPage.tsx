@@ -49,7 +49,9 @@ function PlayPage() {
   const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState<number>(-1);
 
   const [isMoreModalOpen, setIsMoreModalOpen] = useState<boolean>(false);
-  const [playMode, setPlayMode] = useState<PlayMode>(PlayModeValues.OFF);
+  const [playMode, setPlayMode] = useState<PlayMode>(
+    PlayModeValues.CONTINUOUS_PLAY
+  );
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
