@@ -672,12 +672,14 @@ function PlayPage() {
                 >
                   {currentSubtitleIndex !== -1 && (
                     <>
-                      <div
-                        className={`text-xl text-center cursor-pointer select-none transition-all ${
-                          quizSubtitleBlurred && "blur-md"
-                        }`}
-                      >
-                        {subtitle.entries[currentSubtitleIndex].text}
+                      <div className="text-center cursor-pointer">
+                        <span
+                          className={`text-xl transition-all ${
+                            quizSubtitleBlurred && "blur-md"
+                          }`}
+                        >
+                          {subtitle.entries[currentSubtitleIndex].text}
+                        </span>
                       </div>
                       {/* 更多操作按钮 */}
                       <Button
