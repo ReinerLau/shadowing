@@ -672,9 +672,13 @@ function PlayPage() {
                 >
                   {currentSubtitleIndex !== -1 && (
                     <>
-                      <div className="text-center cursor-pointer">
+                      <div
+                        className="text-center cursor-pointer"
+                        // 解决模糊残留问题: https://developers.weixin.qq.com/community/develop/doc/000c6ebfed4b78023b09e27a851800
+                        style={{ transform: "translateZ(0)" }}
+                      >
                         <span
-                          className={`text-xl transition-all ${
+                          className={`text-xl ${
                             quizSubtitleBlurred && "blur-md"
                           }`}
                         >
