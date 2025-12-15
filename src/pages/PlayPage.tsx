@@ -674,7 +674,7 @@ function PlayPage() {
                     <>
                       <div
                         className={`text-xl text-center cursor-pointer select-none transition-all ${
-                          quizSubtitleBlurred ? "blur-md" : ""
+                          quizSubtitleBlurred && "blur-md"
                         }`}
                       >
                         {subtitle.entries[currentSubtitleIndex].text}
