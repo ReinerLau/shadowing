@@ -78,8 +78,7 @@ export const MoreModal = ({
           marks={{
             0.25: "0.25x",
             0.5: "0.5x",
-            0.6: "0.6x",
-            0.8: "0.8x",
+            0.75: "0.75x",
             1.0: "1.0x",
           }}
           value={playbackSpeed}
