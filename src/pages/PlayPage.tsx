@@ -16,6 +16,7 @@ import { useMediaInit } from "../hooks/useMediaInit";
 import { useSubtitleIndexPersist } from "../hooks/useSubtitleIndexPersist";
 import { extractMetadataFromVideoElement } from "../services/videoData";
 import MediaDatabaseService from "../services/mediaDatabase";
+import PlayerSettingsService from "../services/playerSettings";
 import {
   MediaController,
   MediaTimeRange,
@@ -47,17 +48,9 @@ function PlayPage() {
   );
   const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState<number>(-1);
 
-  /**
-   * 同步字幕状态，当 hook 返回的字幕数据变化时更新本地状态
-   */
-  useEffect(() => {
-    if (subtitleFromHook) {
-      setSubtitle(subtitleFromHook);
-    }
-  }, [subtitleFromHook]);
-
   const [isMoreModalOpen, setIsMoreModalOpen] = useState<boolean>(false);
   const [playMode, setPlayMode] = useState<PlayMode>(PlayModeValues.OFF);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
   /** 编辑模式下的精确时间（毫秒），为 null 时使用原始值 */
@@ -74,12 +67,66 @@ function PlayPage() {
   const [subtitleBlurred, setSubtitleBlurred] = useState<boolean>(false);
   /** 测验模式状态 */
   const [quizMode, setQuizMode] = useState<boolean>(false);
+  /** 是否已初始化设置（用于避免初始化时触发保存） */
+  const [isSettingsInitialized, setIsSettingsInitialized] =
+    useState<boolean>(false);
   /** 测验模式下当前字幕的模糊状态 */
   const [quizSubtitleBlurred, setQuizSubtitleBlurred] = useState<boolean>(true);
   /** 是否正在拖动进度条 */
   const isSeeking = useRef<boolean>(false);
   /** 录音模式是否显示 */
   const [recordingMode, setRecordingMode] = useState<boolean>(false);
+
+  /**
+   * 同步字幕状态，当 hook 返回的字幕数据变化时更新本地状态
+   */
+  useEffect(() => {
+    if (subtitleFromHook) {
+      setSubtitle(subtitleFromHook);
+    }
+  }, [subtitleFromHook]);
+
+  /**
+   * 初始化时读取并应用播放器设置
+   */
+  useEffect(() => {
+    const settings = PlayerSettingsService.getPlayerSettings();
+    setPlayMode(settings.playMode);
+    setPlaybackSpeed(settings.playbackSpeed);
+    setSubtitleBlurred(settings.subtitleBlurred);
+    setQuizMode(settings.quizMode);
+    setIsSettingsInitialized(true);
+  }, []);
+
+  /**
+   * 应用播放速度到视频元素
+   */
+  useEffect(() => {
+    if (videoRef.current && playbackSpeed) {
+      videoRef.current.playbackRate = playbackSpeed;
+    }
+  }, [playbackSpeed]);
+
+  /**
+   * 监听设置变化并保存到 localStorage
+   */
+  useEffect(() => {
+    // 避免初始化时触发保存
+    if (!isSettingsInitialized) return;
+
+    PlayerSettingsService.savePlayerSettings({
+      playMode,
+      playbackSpeed,
+      subtitleBlurred,
+      quizMode,
+    });
+  }, [
+    playMode,
+    playbackSpeed,
+    subtitleBlurred,
+    quizMode,
+    isSettingsInitialized,
+  ]);
 
   /**
    * 使用二分法查找距离指定时间最近的字幕索引
@@ -747,8 +794,12 @@ function PlayPage() {
         open={isMoreModalOpen}
         onCancel={handleMoreModalClose}
         onPlayModeChange={(mode) => setPlayMode(mode)}
-        onPlaybackSpeedChange={(speed) => handlePlaybackSpeedChange(speed)}
+        onPlaybackSpeedChange={(speed) => {
+          setPlaybackSpeed(speed);
+          handlePlaybackSpeedChange(speed);
+        }}
         playMode={playMode}
+        playbackSpeed={playbackSpeed}
         subtitleBlurred={subtitleBlurred}
         onSubtitleBlurChange={setSubtitleBlurred}
         quizMode={quizMode}

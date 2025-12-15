@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Modal, Radio, Switch } from "antd";
 import { PlayModeValues, type PlayMode } from "../types";
 
@@ -12,6 +11,8 @@ interface MoreModalProps {
   playMode: PlayMode;
   /** 播放模式变化回调 */
   onPlayModeChange: (mode: PlayMode) => void;
+  /** 当前播放速度 */
+  playbackSpeed: number;
   /** 播放速度变化回调 - 供父组件应用速度到视频 */
   onPlaybackSpeedChange: (speed: number) => void;
   /** 字幕模糊状态 */
@@ -34,6 +35,7 @@ export const MoreModal = ({
   open,
   playMode,
   onPlayModeChange,
+  playbackSpeed,
   onPlaybackSpeedChange,
   subtitleBlurred,
   onSubtitleBlurChange,
@@ -41,18 +43,6 @@ export const MoreModal = ({
   onQuizModeChange,
   onCancel,
 }: MoreModalProps) => {
-  /** 播放速度状态，由 MoreModal 内部管理 */
-  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
-
-  /**
-   * 处理播放速度变化
-   */
-  const handlePlaybackSpeedChange = (speed: number) => {
-    setPlaybackSpeed(speed);
-    // 通知父组件应用速度到视频
-    onPlaybackSpeedChange(speed);
-  };
-
   return (
     <Modal title="更多选项" open={open} onCancel={onCancel} footer={null}>
       <div className="flex flex-col gap-2">
@@ -84,7 +74,7 @@ export const MoreModal = ({
         <Radio.Group
           block
           value={playbackSpeed}
-          onChange={(e) => handlePlaybackSpeedChange(e.target.value as number)}
+          onChange={(e) => onPlaybackSpeedChange(e.target.value as number)}
           optionType="button"
           buttonStyle="solid"
           options={[
